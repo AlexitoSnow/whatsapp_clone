@@ -28,7 +28,7 @@ class SettingsScreen extends ConsumerWidget {
                     subtitle: Text(data?.info ?? 'Hola, estoy usando WhatsApp'),
                     leading: InkWell(
                       onTap: () async {
-                        await pickImageFromGallery().then((value) {
+                        await pickMediaFromGallery().then((value) {
                           if (value != null) {
                             ref
                                 .read(authControllerProvider)

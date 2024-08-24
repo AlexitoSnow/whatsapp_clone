@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:chat_bubbles/chat_bubbles.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,8 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_clone/models/message.dart';
-import 'package:whatsapp_clone/styles/app_theme.dart';
+
+import '../widgets/chat_bubble.dart';
 
 class ChatList extends ConsumerStatefulWidget {
   const ChatList(this.recieverUserId, {super.key});
@@ -56,21 +56,7 @@ class _ChatListState extends ConsumerState<ChatList> {
             indexedItemBuilder: (context, message, index) {
               log('Message Retrieved: ${messages[index].messageId}',
                   name: 'ChatList');
-              return BubbleSpecialOne(
-                text: message.text,
-                isSender:
-                    message.senderId == FirebaseAuth.instance.currentUser!.uid,
-                color:
-                    message.senderId == FirebaseAuth.instance.currentUser!.uid
-                        ? messageColor
-                        : senderMessageColor,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                seen: message.isSeen,
-                //TODO: Acomodar la burbuja de mensaje cuando un usuario envia varios mensajes seguidos
-              );
+              return ChatBubble(message);
             },
           );
         });

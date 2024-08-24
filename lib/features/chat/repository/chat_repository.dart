@@ -217,7 +217,7 @@ class ChatRepository {
         log('Data saved to ${auth.currentUser!.uid} messages subcollection',
             name: 'ChatRepository');
       });
-      // users -> eciever id  -> sender id -> messages -> message id -> store message
+      // users -> reciever id  -> sender id -> messages -> message id -> store message
       await firestore
           .collection('users')
           .doc(recieverUserId)
@@ -307,11 +307,11 @@ class ChatRepository {
         recieverUserData = UserModel.fromMap(userDataMap.data()!);
       }
 
-      String contactMsg = messageType.formatted;
+      String lastMessage = messageType.formatted;
       _saveDataToContactsSubcollection(
         senderUserData,
         recieverUserData,
-        contactMsg,
+        lastMessage,
         timeSent,
         recieverUserId,
         isGroupChat,

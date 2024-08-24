@@ -9,11 +9,13 @@ environment:
 dependencies:
   any_link_preview: ^3.0.2
   cached_network_image: ^3.4.0
+  cached_video_player_plus: ^3.0.3
   chat_bubbles: ^1.6.0
   cloud_firestore: ^5.2.1
   country: ^4.1.7
   emoji_picker_flutter: ^2.2.0
   enough_giphy_flutter: ^0.4.1
+  file_picker: ^8.0.7
   firebase_analytics: ^11.2.1
   firebase_auth: ^5.1.4
   firebase_core: ^3.3.0
@@ -39,6 +41,7 @@ dependencies:
   swipe_to: ^1.0.6
   timeago: ^3.7.0
   uuid: ^4.4.2
+  video_player: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -77,3 +80,7 @@ flutter_native_splash:
   android_12:
     color: "#ffffff"
     image: "assets/icons/splash-icon.png"
+
+analyzer:
+  plugins:
+    - custom_lint

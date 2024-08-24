@@ -69,6 +69,7 @@ class ChatContactTile extends StatelessWidget {
     required this.avatarUrl,
     required this.timeSent,
     this.onSelected,
+    this.isTyping = false,
   });
 
   final VoidCallback? onSelected;
@@ -76,6 +77,7 @@ class ChatContactTile extends StatelessWidget {
   final String lastMessage;
   final String? avatarUrl;
   final DateTime timeSent;
+  final bool isTyping;
 
   @override
   Widget build(BuildContext context) {
@@ -86,11 +88,16 @@ class ChatContactTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.done_all),
-          Expanded(
+          FittedBox(
+            fit: BoxFit.contain,
             child: Text(
               lastMessage,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: isTyping
+                  ? const TextStyle(
+                      fontStyle: FontStyle.italic, color: Colors.greenAccent)
+                  : null,
             ),
           ),
         ],

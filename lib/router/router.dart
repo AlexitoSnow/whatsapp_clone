@@ -25,22 +25,23 @@ class AppRouter {
     initialLocation: AppRoutes.landing,
     redirect: redirection,
     routes: routes,
+    debugLogDiagnostics: true,
   );
 
   //TODO: Implement the redirection method
   static FutureOr<String?> redirection(context, state) async {
     final container = ProviderScope.containerOf(context);
-    final user = await container.read(userDataProvider.future);
+    var user = await container.read(userDataProvider.future);
     final currentLocation = state.fullPath;
 
     log('UserModel has data: ${user != null}', name: 'AppRouter Redirect');
     log('Current Location: ${state.fullPath}', name: 'AppRouter Redirect');
-
+/*
     // * Redirection rules at Landing Screen
     if (currentLocation == AppRoutes.landing) {}
 
     // * Redirection rules at Home Screen
-    if (currentLocation == AppRoutes.home) {}
+    if (currentLocation == AppRoutes.home) {}*/
 
     /*
     //TODO: Read the selected language from the shared preferences
@@ -55,21 +56,20 @@ class AppRouter {
       }
     });
 
-    // * If the user is not logged in and the current location is the home screen
-    if (user == null && state.fullPath == AppRoutes.home) {
+    */
+    if (user == null && currentLocation == AppRoutes.home) {
       log('No user data found, redirecting to login',
           name: 'AppRouter Redirect');
       return AppRoutes.login;
     }
 
-    if (user != null && state.fullPath == AppRoutes.landing) {
+    if (user != null && currentLocation == AppRoutes.landing) {
       log('User data found, redirecting to mobile chat',
           name: 'AppRouter Redirect');
       return AppRoutes.home;
     }
 
     log('User data found, not doing anything', name: 'AppRouter Redirect');
-    */
     return null;
   }
 
@@ -121,7 +121,7 @@ class AppRouter {
         final user = state.extra as Map<String, dynamic>;
         return ChatScreen(
           name: user['name'],
-          uid: user['uid'],
+          receiverUserId: user['uid'],
         );
       },
     ),

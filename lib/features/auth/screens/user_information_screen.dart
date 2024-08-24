@@ -31,46 +31,46 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
       body: SafeArea(
         child: Center(
           child: ref.watch(userDataProvider).when(
-            loading: () => const CircularProgressIndicator(),
-            error: (error, _) => Text('Error: $error'),
-            data: (user) {
-              log('User: ${user?.name}', name: 'UserInformationScreen');
-              return Column(
-                children: [
-                  InkWell(
-                    onTap: () async =>
-                        file.value = await pickImageFromGallery(),
-                    child: ValueListenableBuilder(
-                      valueListenable: file,
-                      builder: (_, value, __) {
-                        String? imageUrl = user?.profilePic;
-                        return CircleAvatar(
-                          backgroundColor: greyColor,
-                          foregroundImage: value != null
-                              ? FileImage(value)
-                              : imageUrl != null
-                                  ? NetworkImage(imageUrl)
-                                  : null,
-                          child: const Icon(Icons.person),
-                        );
-                      },
-                    ),
-                  ),
-                  TextField(
-                    controller: nameController..text = user?.name ?? '',
-                    decoration: const InputDecoration(
-                      hintText: 'Nombre',
-                      suffixIcon: Icon(Icons.check),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: storeUserData,
-                    child: const Text('Siguiente'),
-                  ),
-                ],
-              );
-            },
-          ),
+                loading: () => const CircularProgressIndicator(),
+                error: (error, _) => Text('Error: $error'),
+                data: (user) {
+                  log('User: ${user?.name}', name: 'UserInformationScreen');
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: () async =>
+                            file.value = await pickMediaFromGallery(),
+                        child: ValueListenableBuilder(
+                          valueListenable: file,
+                          builder: (_, value, __) {
+                            String? imageUrl = user?.profilePic;
+                            return CircleAvatar(
+                              backgroundColor: greyColor,
+                              foregroundImage: value != null
+                                  ? FileImage(value)
+                                  : imageUrl != null
+                                      ? NetworkImage(imageUrl)
+                                      : null,
+                              child: const Icon(Icons.person),
+                            );
+                          },
+                        ),
+                      ),
+                      TextField(
+                        controller: nameController..text = user?.name ?? '',
+                        decoration: const InputDecoration(
+                          hintText: 'Nombre',
+                          suffixIcon: Icon(Icons.check),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: storeUserData,
+                        child: const Text('Siguiente'),
+                      ),
+                    ],
+                  );
+                },
+              ),
         ),
       ),
     );

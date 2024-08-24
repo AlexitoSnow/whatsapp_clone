@@ -5,6 +5,7 @@ class ChatContact {
   final String contactId;
   final DateTime timeSent;
   final String lastMessage;
+  final bool isTyping;
 
   ChatContact({
     required this.phone,
@@ -12,6 +13,7 @@ class ChatContact {
     required this.contactId,
     required this.timeSent,
     required this.lastMessage,
+    this.isTyping = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +23,7 @@ class ChatContact {
       'contactId': contactId,
       'timeSent': timeSent.millisecondsSinceEpoch,
       'lastMessage': lastMessage,
+      'isTyping': isTyping,
     };
   }
 
@@ -31,6 +34,7 @@ class ChatContact {
       contactId: map['contactId'],
       timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent']),
       lastMessage: map['lastMessage'],
+      isTyping: map['isTyping'],
     );
   }
 }

@@ -22,7 +22,7 @@ class ChatTextField extends StatefulWidget {
   final Function(String)? onChanged;
 
   @override
-  State<ChatTextField> createState() => _ChatTextFieldState();
+  State<StatefulWidget> createState() => _ChatTextFieldState();
 }
 
 class _ChatTextFieldState extends State<ChatTextField> {
@@ -39,6 +39,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
               maxLines: null,
               controller: widget.messageController,
               keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
               onChanged: (value) {
                 widget.onChanged?.call(value);
                 showMicButton.value = value.isEmpty;

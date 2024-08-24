@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:whatsapp_clone/common/enums/message_type.dart';
+import 'package:whatsapp_clone/common/utils/utils.dart';
 import 'package:whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_clone/models/user_model.dart';
@@ -15,10 +19,11 @@ import 'package:timeago/timeago.dart';
 import '../widgets/chat_text_field.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key, required this.name, required this.uid});
+  const ChatScreen(
+      {super.key, required this.name, required this.receiverUserId});
 
   final String name;
-  final String uid;
+  final String receiverUserId;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ChatScreenState();
@@ -46,7 +51,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         backgroundColor: appBarColor,
         titleSpacing: 0,
         title: StreamBuilder<UserModel>(
-          stream: ref.read(authControllerProvider).getUserById(widget.uid),
+          stream: ref
+              .read(authControllerProvider)
+              .getUserById(widget.receiverUserId),
           builder: (context, snapshot) {
             return ListTile(
               onTap: () {
@@ -114,7 +121,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Column(
             children: [
               Expanded(
-                child: ChatList(widget.uid),
+                child: ChatList(widget.receiverUserId),
               ),
               ChatTextField(
                 messageController: messageController,
@@ -125,7 +132,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   if (message.isNotEmpty) {
                     ref.read(chatControllerProvider).sendTextMessage(
                           text: messageController.text,
-                          recieverUserId: widget.uid,
+                          recieverUserId: widget.receiverUserId,
                         );
                     messageController.clear();
                   } else {
@@ -133,6 +140,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         msg: 'No puedes enviar un mensaje vacío');
                   }
                 },
+                onCameraPressed: () => attachFile(pickMediaFromGallery()),
+                onAttachFilePressed: () => attachFile(pickFile()),
               ),
               ValueListenableBuilder(
                 valueListenable: isEmojisVisible,
@@ -148,5 +157,53 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ],
       ),
     );
+  }
+
+  void sendFileMessage(
+    File file,
+    MessageType messageType,
+  ) {
+    ref.read(chatControllerProvider).sendFileMessage(
+          file: file,
+          recieverUserId: widget.receiverUserId,
+          messageType: messageType,
+        );
+  }
+
+  void attachFile(Future<File?> action) async {
+    File? doc = await action;
+    if (doc != null) {
+      if (mounted) {
+        showAdaptiveDialog(
+          context: context,
+          builder: (context) => AlertDialog.adaptive(
+            title: const Text('Adjuntar documento'),
+            content: const Text('¿Desea enviar este archivo?'),
+            actions: [
+              TextButton(
+                onPressed: context.pop,
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.pop();
+                  final extension = doc.path.split('.').last;
+                  if (extension == 'mp4') {
+                    sendFileMessage(doc, MessageType.video);
+                  } else if (extension == 'png' ||
+                      extension == 'jpg' ||
+                      extension == 'jpeg') {
+                    sendFileMessage(doc, MessageType.image);
+                  } else {
+                    sendFileMessage(doc, MessageType.file);
+                  }
+                },
+                child: const Text('Enviar'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 }
