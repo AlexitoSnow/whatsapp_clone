@@ -34,6 +34,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final showMicButton = ValueNotifier<bool>(true);
   final messageController = TextEditingController();
   final scrollController = ScrollController();
+  final focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        isEmojisVisible.value = false;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -41,6 +52,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     isEmojisVisible.dispose();
     showMicButton.dispose();
     scrollController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -124,9 +136,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 child: ChatList(widget.receiverUserId),
               ),
               ChatTextField(
+                key: const ValueKey('ChatTextField'),
+                focusNode: focusNode,
                 messageController: messageController,
-                onEmojiIconPressed: () =>
-                    isEmojisVisible.value = !isEmojisVisible.value,
+                onEmojiIconPressed: () {
+                  isEmojisVisible.value = !isEmojisVisible.value;
+                  if (isEmojisVisible.value) {
+                    focusNode.unfocus();
+                  } else {
+                    focusNode.requestFocus();
+                  }
+                },
                 onSendPressed: () {
                   final message = messageController.text.trim();
                   if (message.isNotEmpty) {
@@ -149,6 +169,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   offstage: !isVisible,
                   child: EmojiPicker(
                     textEditingController: messageController,
+                    config: const Config(swapCategoryAndBottomBar: true),
                   ),
                 ),
               ),

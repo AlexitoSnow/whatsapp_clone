@@ -13,6 +13,7 @@ class VideoItem extends StatefulWidget {
 
 class _VideoItemState extends State<VideoItem> {
   late CachedVideoPlayerPlusController controller;
+  bool showControls = false;
 
   @override
   void initState() {
@@ -37,13 +38,20 @@ class _VideoItemState extends State<VideoItem> {
   Widget build(BuildContext context) {
     return Center(
       child: controller.value.isInitialized
-          ? AspectRatio(
-              aspectRatio: controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  CachedVideoPlayerPlus(controller),
-                  IconButton(
+          ? Stack(
+              alignment: Alignment.center,
+              children: [
+                GestureDetector(
+                  child: CachedVideoPlayerPlus(controller),
+                  onTap: () {
+                    setState(() {
+                      showControls = !showControls;
+                    });
+                  },
+                ),
+                Visibility(
+                  visible: showControls,
+                  child: IconButton(
                     iconSize: 50,
                     onPressed: () {
                       if (controller.value.isPlaying) {
@@ -60,8 +68,8 @@ class _VideoItemState extends State<VideoItem> {
                       color: greyColor,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             )
           : const CircularProgressIndicator.adaptive(),
     );

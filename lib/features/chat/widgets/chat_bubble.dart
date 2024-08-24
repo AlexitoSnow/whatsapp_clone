@@ -8,6 +8,7 @@ import 'package:whatsapp_clone/features/chat/widgets/video_message.dart';
 import 'package:whatsapp_clone/models/message.dart';
 import 'package:whatsapp_clone/styles/app_theme.dart';
 
+// TODO: FIX BUBBLES
 class ChatBubble extends StatelessWidget {
   const ChatBubble(this.message, {super.key});
   final Message message;

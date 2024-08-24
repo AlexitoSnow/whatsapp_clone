@@ -11,6 +11,7 @@ class ChatTextField extends StatefulWidget {
     this.onMicPressed,
     this.onSendPressed,
     this.onChanged,
+    this.focusNode,
   });
 
   final TextEditingController messageController;
@@ -20,6 +21,7 @@ class ChatTextField extends StatefulWidget {
   final VoidCallback? onMicPressed;
   final VoidCallback? onSendPressed;
   final Function(String)? onChanged;
+  final FocusNode? focusNode;
 
   @override
   State<StatefulWidget> createState() => _ChatTextFieldState();
@@ -27,6 +29,26 @@ class ChatTextField extends StatefulWidget {
 
 class _ChatTextFieldState extends State<ChatTextField> {
   final ValueNotifier<bool> showMicButton = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> showCamButton = ValueNotifier<bool>(true);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.messageController.addListener(() {
+      showMicButton.value = widget.messageController.text.isEmpty;
+      if (widget.messageController.text.isNotEmpty) {
+        showCamButton.value = false;
+      } else {
+        showCamButton.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    showMicButton.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +58,13 @@ class _ChatTextFieldState extends State<ChatTextField> {
         children: [
           Expanded(
             child: TextField(
+              key: widget.key,
+              focusNode: widget.focusNode,
               maxLines: null,
               controller: widget.messageController,
               keyboardType: TextInputType.multiline,
               textCapitalization: TextCapitalization.sentences,
-              onChanged: (value) {
-                widget.onChanged?.call(value);
-                showMicButton.value = value.isEmpty;
-              },
+              onChanged: widget.onChanged,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: mobileChatBoxColor,
@@ -65,12 +86,20 @@ class _ChatTextFieldState extends State<ChatTextField> {
                         color: Colors.grey,
                       ),
                     ),
-                    IconButton(
-                      onPressed: widget.onCameraPressed,
-                      icon: const Icon(
-                        Icons.camera_alt_outlined,
-                        color: Colors.grey,
-                      ),
+                    ValueListenableBuilder(
+                      valueListenable: showCamButton,
+                      builder: (context, showCam, child) {
+                        return Visibility(
+                          visible: showCam,
+                          child: IconButton(
+                            onPressed: widget.onCameraPressed,
+                            icon: const Icon(
+                              Icons.camera_alt_outlined,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        );
+                      }
                     ),
                   ],
                 ),
