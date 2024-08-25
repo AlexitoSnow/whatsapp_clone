@@ -1,6 +1,5 @@
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp_clone/styles/app_theme.dart';
 
 class VideoItem extends StatefulWidget {
   const VideoItem({super.key, required this.videoUrl});
@@ -13,7 +12,7 @@ class VideoItem extends StatefulWidget {
 
 class _VideoItemState extends State<VideoItem> {
   late CachedVideoPlayerPlusController controller;
-  bool showControls = false;
+  bool showControls = true;
 
   @override
   void initState() {
@@ -38,39 +37,7 @@ class _VideoItemState extends State<VideoItem> {
   Widget build(BuildContext context) {
     return Center(
       child: controller.value.isInitialized
-          ? Stack(
-              alignment: Alignment.center,
-              children: [
-                GestureDetector(
-                  child: CachedVideoPlayerPlus(controller),
-                  onTap: () {
-                    setState(() {
-                      showControls = !showControls;
-                    });
-                  },
-                ),
-                Visibility(
-                  visible: showControls,
-                  child: IconButton(
-                    iconSize: 50,
-                    onPressed: () {
-                      if (controller.value.isPlaying) {
-                        controller.pause();
-                      } else {
-                        controller.play();
-                      }
-                      setState(() {});
-                    },
-                    icon: Icon(
-                      controller.value.isPlaying
-                          ? Icons.pause_circle
-                          : Icons.play_circle,
-                      color: greyColor,
-                    ),
-                  ),
-                ),
-              ],
-            )
+          ? CachedVideoPlayerPlus(controller)
           : const CircularProgressIndicator.adaptive(),
     );
   }

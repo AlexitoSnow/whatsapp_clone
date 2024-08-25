@@ -1,12 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_bubbles/bubbles/bubble_normal_image.dart';
-import 'package:chat_bubbles/bubbles/bubble_special_one.dart';
+import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/enums/message_type.dart';
 import 'package:whatsapp_clone/features/chat/widgets/video_message.dart';
 import 'package:whatsapp_clone/models/message.dart';
 import 'package:whatsapp_clone/styles/app_theme.dart';
+
+import 'media_screen.dart';
 
 // TODO: FIX BUBBLES
 class ChatBubble extends StatelessWidget {
@@ -23,13 +25,51 @@ class ChatBubble extends StatelessWidget {
           image: CachedNetworkImage(
             imageUrl: message.text,
           ),
+          onTap: () {
+            log('Tapped');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+              builder: (context) => MediaScreen(
+                user: message.senderId,
+                timeSent: message.timeSent,
+                imageUrl: message.text,
+                message: message.text,
+              ),
+            ));
+          },
         );
       case MessageType.video:
         return BubbleNormalImage(
-          id: message.messageId,
+            id: message.messageId,
+            isSender:
+                message.senderId == FirebaseAuth.instance.currentUser!.uid,
+            image: VideoItem(
+              videoUrl: message.text,
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                builder: (context) => MediaScreen(
+                  user: message.senderId,
+                  timeSent: message.timeSent,
+                  videoUrl: message.text,
+                  message: message.text,
+                ),
+              ));
+            });
+      case MessageType.audio:
+        return BubbleNormalAudio(
+          onSeekChanged: (value) {},
+          onPlayPauseButtonClick: () {},
           isSender: message.senderId == FirebaseAuth.instance.currentUser!.uid,
-          image: VideoItem(
-            videoUrl: message.text,
+          color: message.senderId == FirebaseAuth.instance.currentUser!.uid
+              ? messageColor
+              : senderMessageColor,
+          textStyle: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
           ),
         );
       default:
