@@ -44,6 +44,11 @@ class ChatController {
     );
   }
 
+  Future<void> cleanChat(String recieverUserId) async {
+    final response = await chatRepository.cleanChat(recieverUserId);
+    Fluttertoast.showToast(msg: response ?? 'Chat vaciado correctamente');
+  }
+
   void sendFileMessage({
     required File file,
     required String recieverUserId,

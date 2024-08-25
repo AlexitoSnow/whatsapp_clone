@@ -20,6 +20,9 @@ class ChatBubble extends StatelessWidget {
     switch (message.type) {
       case MessageType.image:
         return BubbleNormalImage(
+          color: message.senderId == FirebaseAuth.instance.currentUser!.uid
+              ? messageColor
+              : senderMessageColor,
           id: message.messageId,
           isSender: message.senderId == FirebaseAuth.instance.currentUser!.uid,
           image: CachedNetworkImage(
@@ -41,6 +44,9 @@ class ChatBubble extends StatelessWidget {
         );
       case MessageType.video:
         return BubbleNormalImage(
+            color: message.senderId == FirebaseAuth.instance.currentUser!.uid
+                ? messageColor
+                : senderMessageColor,
             id: message.messageId,
             isSender:
                 message.senderId == FirebaseAuth.instance.currentUser!.uid,
@@ -61,6 +67,7 @@ class ChatBubble extends StatelessWidget {
             });
       case MessageType.audio:
         return BubbleNormalAudio(
+          duration: 10,
           onSeekChanged: (value) {},
           onPlayPauseButtonClick: () {},
           isSender: message.senderId == FirebaseAuth.instance.currentUser!.uid,

@@ -26,6 +26,29 @@ class ChatRepository {
     required this.auth,
   });
 
+  Future<String?> cleanChat(String recieverUserId) async {
+    try {
+      // limpiar chats
+      final chatDocRef = firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('chats')
+          .doc(recieverUserId);
+
+      final messages = await chatDocRef.collection('messages').get();
+      for (var doc in messages.docs) {
+        await doc.reference.delete();
+      }
+
+      await chatDocRef.delete();
+
+      //limpiar media sources
+    } on FirebaseException catch (e) {
+      return e.toString();
+    }
+    return null;
+  }
+
   Stream<List<ChatContact>> getChatContacts() {
     return firestore
         .collection('users')

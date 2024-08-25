@@ -112,9 +112,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onPressed: () {},
             icon: const Icon(Icons.call_outlined),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'view',
+                child: Text('Ver contacto'),
+              ),
+              const PopupMenuItem(
+                value: 'search',
+                child: Text('Buscar'),
+              ),
+              const PopupMenuItem(
+                value: 'mute',
+                child: Text('Silenciar notificaciones'),
+              ),
+              PopupMenuItem(
+                value: 'clean',
+                onTap: () => ref.watch(chatControllerProvider).cleanChat(widget.receiverUserId),
+                child: const Text('Vaciar chat'),
+              ),
+            ],
           ),
         ],
       ),
