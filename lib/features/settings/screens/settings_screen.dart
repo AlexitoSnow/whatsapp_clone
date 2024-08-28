@@ -22,8 +22,12 @@ class SettingsScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ref.watch(userDataProvider).when<Widget>(
-                  data: (data) => ListTile(
+            FutureBuilder(
+              future: ref.watch(userDataProvider.future),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  final data = snapshot.data;
+                  return ListTile(
                     title: Text(data?.name ?? '~'),
                     subtitle: Text(data?.info ?? 'Hola, estoy usando WhatsApp'),
                     leading: InkWell(
@@ -48,15 +52,19 @@ class SettingsScreen extends ConsumerWidget {
                             : null,
                       ),
                     ),
-                  ),
-                  error: (error, _) => ListTile(
+                  );
+                } else if (snapshot.hasError) {
+                  return ListTile(
                     title: const Text('Error'),
-                    subtitle: Text(error.toString()),
-                  ),
-                  loading: () => const ListTile(
+                    subtitle: Text(snapshot.error.toString()),
+                  );
+                } else {
+                  return const ListTile(
                     title: Text('Cargando...'),
-                  ),
-                ),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
