@@ -1,20 +1,20 @@
 import 'dart:io';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:whatsapp_clone/common/widgets/camera_screen.dart';
 import 'package:whatsapp_clone/common/enums/message_type.dart';
 import 'package:whatsapp_clone/common/utils/utils.dart';
-import 'package:whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
-import 'package:whatsapp_clone/models/user_model.dart';
-import 'package:whatsapp_clone/router/router.dart';
-import 'package:whatsapp_clone/styles/app_theme.dart';
+import '../widgets/chat_background.dart';
+import '../widgets/contact_bar.dart';
 import 'chat_list.dart';
-import 'package:timeago/timeago.dart';
 
 import '../widgets/chat_text_field.dart';
 
@@ -31,10 +31,11 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final isEmojisVisible = ValueNotifier<bool>(false);
-  final showMicButton = ValueNotifier<bool>(true);
+  final isRecording = ValueNotifier<bool>(false);
   final messageController = TextEditingController();
   final scrollController = ScrollController();
   final focusNode = FocusNode();
+  final soundRecorder = FlutterSoundRecorder();
 
   @override
   void initState() {
@@ -44,109 +45,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         isEmojisVisible.value = false;
       }
     });
+    openAudio();
+  }
+
+  void openAudio() async {
+    final status = await Permission.microphone.request();
+    if (status == PermissionStatus.denied) {
+      throw RecordingPermissionException('Permiso de grabación denegado');
+    }
+    await soundRecorder.openRecorder();
   }
 
   @override
   void dispose() {
     messageController.dispose();
     isEmojisVisible.dispose();
-    showMicButton.dispose();
     scrollController.dispose();
     focusNode.dispose();
+    isRecording.dispose();
+    soundRecorder.closeRecorder();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: appBarColor,
-        titleSpacing: 0,
-        title: StreamBuilder<UserModel>(
-          stream: ref
-              .read(authControllerProvider)
-              .getUserById(widget.receiverUserId),
-          builder: (context, snapshot) {
-            return ListTile(
-              onTap: () {
-                context.push(
-                  AppRoutes.profile,
-                  extra: snapshot.data,
-                );
-              },
-              title: Text(
-                widget.name,
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(snapshot.data?.isOnline == true
-                  ? 'En línea'
-                  : snapshot.data?.lastSeen != null
-                      ? 'Últ. vez ${format(snapshot.data!.lastSeen!)}'
-                      : ''),
-              leading: CircleAvatar(
-                backgroundImage: snapshot.data?.profilePic != null
-                    ? CachedNetworkImageProvider(
-                        snapshot.data!.profilePic!,
-                      )
-                    : null,
-                radius: 20,
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.grey,
-                child: const Icon(Icons.person),
-              ),
-            );
-          },
-        ),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.videocam_outlined),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.call_outlined),
-          ),
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'view',
-                child: Text('Ver contacto'),
-              ),
-              const PopupMenuItem(
-                value: 'search',
-                child: Text('Buscar'),
-              ),
-              const PopupMenuItem(
-                value: 'mute',
-                child: Text('Silenciar notificaciones'),
-              ),
-              PopupMenuItem(
-                value: 'clean',
-                onTap: () => ref.watch(chatControllerProvider).cleanChat(widget.receiverUserId),
-                child: const Text('Vaciar chat'),
-              ),
-            ],
-          ),
-        ],
+      appBar: ContactBar(
+        key: const ValueKey('ContactBar'),
+        name: widget.name,
+        receiverUserId: widget.receiverUserId,
       ),
       body: Stack(
         children: [
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/backgroundImage.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          const ChatBackground(),
           Column(
             children: [
               Expanded(
@@ -156,6 +87,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 key: const ValueKey('ChatTextField'),
                 focusNode: focusNode,
                 messageController: messageController,
+                onMicPressed: () async {
+                  try {
+                    final tempDir = await getTemporaryDirectory();
+                    var path = '${tempDir.path}/flutter_sound.aac';
+                    if (isRecording.value) {
+                      await soundRecorder.stopRecorder();
+                      sendFileMessage(File(path), MessageType.audio);
+                    } else {
+                      await soundRecorder.startRecorder(toFile: path);
+                    }
+                    isRecording.value = !isRecording.value;
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: e.toString());
+                  }
+                },
                 onEmojiIconPressed: () {
                   isEmojisVisible.value = !isEmojisVisible.value;
                   if (isEmojisVisible.value) {
@@ -177,7 +123,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         msg: 'No puedes enviar un mensaje vacío');
                   }
                 },
-                onCameraPressed: () => attachFile(pickMediaFromGallery()),
+                //onCameraPressed: () => attachFile(pickMediaFromGallery()),
+                onCameraPressed: () async {
+                  final response = await Permission.camera.request();
+                  if (response != PermissionStatus.denied) {
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CameraScreen()),
+                      );
+                    }
+                  }
+                },
                 onAttachFilePressed: () => attachFile(pickFile()),
               ),
               ValueListenableBuilder(
@@ -232,6 +189,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       extension == 'jpg' ||
                       extension == 'jpeg') {
                     sendFileMessage(doc, MessageType.image);
+                  } else if (extension == 'aac') {
+                    sendFileMessage(doc, MessageType.audio);
                   } else {
                     sendFileMessage(doc, MessageType.file);
                   }

@@ -3,6 +3,7 @@ import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:whatsapp_clone/common/enums/message_type.dart';
 import 'package:whatsapp_clone/features/chat/widgets/video_message.dart';
 import 'package:whatsapp_clone/models/message.dart';
@@ -31,15 +32,15 @@ class ChatBubble extends StatelessWidget {
           onTap: () {
             log('Tapped');
             Navigator.push(
-              context,
-              MaterialPageRoute(
-              builder: (context) => MediaScreen(
-                user: message.senderId,
-                timeSent: message.timeSent,
-                imageUrl: message.text,
-                message: message.text,
-              ),
-            ));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MediaScreen(
+                    user: message.senderId,
+                    timeSent: message.timeSent,
+                    imageUrl: message.text,
+                    message: message.text,
+                  ),
+                ));
           },
         );
       case MessageType.video:
@@ -55,30 +56,50 @@ class ChatBubble extends StatelessWidget {
             ),
             onTap: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(
-                builder: (context) => MediaScreen(
-                  user: message.senderId,
-                  timeSent: message.timeSent,
-                  videoUrl: message.text,
-                  message: message.text,
-                ),
-              ));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MediaScreen(
+                      user: message.senderId,
+                      timeSent: message.timeSent,
+                      videoUrl: message.text,
+                      message: message.text,
+                    ),
+                  ));
             });
       case MessageType.audio:
-        return BubbleNormalAudio(
-          duration: 10,
-          onSeekChanged: (value) {},
-          onPlayPauseButtonClick: () {},
-          isSender: message.senderId == FirebaseAuth.instance.currentUser!.uid,
-          color: message.senderId == FirebaseAuth.instance.currentUser!.uid
-              ? messageColor
-              : senderMessageColor,
-          textStyle: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-          ),
-        );
+        final player = AudioPlayer();
+        player.setSourceUrl(message.text);
+        return StatefulBuilder(builder: (context, setState) {
+          var duration = 0.0;
+          player.getDuration().then((value) {
+            setState(() {
+              duration = value?.inSeconds.toDouble() ?? 0.0;
+            });
+          });
+          return BubbleNormalAudio(
+            duration: duration,
+            onSeekChanged: (value) {
+              player.seek(Duration(seconds: value.toInt()));
+            },
+            isPlaying: player.state == PlayerState.playing,
+            onPlayPauseButtonClick: () async {
+              if (player.state != PlayerState.playing) {
+                await player.resume();
+              } else {
+                await player.pause();
+              }
+            },
+            isSender:
+                message.senderId == FirebaseAuth.instance.currentUser!.uid,
+            color: message.senderId == FirebaseAuth.instance.currentUser!.uid
+                ? messageColor
+                : senderMessageColor,
+            textStyle: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          );
+        });
       default:
         return BubbleSpecialOne(
           text: message.text,

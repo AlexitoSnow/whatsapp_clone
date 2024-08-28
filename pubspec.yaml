@@ -1,6 +1,6 @@
 name: whatsapp_clone
 description: "WhatsApp Clone in Flutter 2024"
-publish_to: 'none'
+publish_to: "'none'"
 version: 0.1.0
 
 environment:
@@ -8,8 +8,10 @@ environment:
 
 dependencies:
   any_link_preview: ^3.0.2
+  audioplayers: ^6.1.0
   cached_network_image: ^3.4.0
   cached_video_player_plus: ^3.0.3
+  camera: ^0.11.0+2
   chat_bubbles: ^1.6.0
   cloud_firestore: ^5.2.1
   country: ^4.1.7
@@ -32,6 +34,7 @@ dependencies:
   grouped_list: ^6.0.0
   image_picker: ^1.1.2
   intl: ^0.19.0
+  path_provider: ^2.1.4
   permission_handler: ^11.3.1
   pinput: ^5.0.0
   riverpod_annotation: ^2.3.5
