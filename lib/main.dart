@@ -5,9 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_clone/router/router.dart';
 import 'styles/app_theme.dart';
 import 'firebase_options.dart';
+import 'package:camera/camera.dart';
+import 'common/widgets/camera_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
