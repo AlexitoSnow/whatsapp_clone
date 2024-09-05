@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/styles/app_theme.dart';
 
@@ -57,65 +59,107 @@ class _ChatTextFieldState extends State<ChatTextField> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              key: widget.key,
-              focusNode: widget.focusNode,
-              maxLines: null,
-              controller: widget.messageController,
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-              onChanged: widget.onChanged,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: mobileChatBoxColor,
-                prefixIcon: IconButton(
-                  onPressed: widget.onEmojiIconPressed,
-                  icon: const Icon(
-                    Icons.emoji_emotions,
-                    color: Colors.grey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 70,
+                  decoration: const BoxDecoration(
+                    color: mobileChatBoxColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      const ListTile(
+                        title: Text('Contacto'),
+                        subtitle: Text('Mensaje'),
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: InkWell(
+                          onTap: () =>
+                              log('CloseEvent', name: 'ChatTextField Reply'),
+                          child: const Icon(Icons.close),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      onPressed: widget.onAttachFilePressed,
+                TextField(
+                  key: widget.key,
+                  focusNode: widget.focusNode,
+                  maxLines: null,
+                  controller: widget.messageController,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: widget.onChanged,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: mobileChatBoxColor,
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    prefixIcon: IconButton(
+                      onPressed: widget.onEmojiIconPressed,
                       icon: const Icon(
-                        Icons.attach_file,
+                        Icons.emoji_emotions,
                         color: Colors.grey,
                       ),
                     ),
-                    ValueListenableBuilder(
-                      valueListenable: showCamButton,
-                      builder: (context, showCam, child) {
-                        return Visibility(
-                          visible: showCam,
-                          child: IconButton(
-                            onPressed: widget.onCameraPressed,
-                            icon: const Icon(
-                              Icons.camera_alt_outlined,
-                              color: Colors.grey,
-                            ),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: widget.onAttachFilePressed,
+                          icon: const Icon(
+                            Icons.attach_file,
+                            color: Colors.grey,
                           ),
-                        );
-                      }
+                        ),
+                        ValueListenableBuilder(
+                            valueListenable: showCamButton,
+                            builder: (context, showCam, child) {
+                              return Visibility(
+                                visible: showCam,
+                                child: IconButton(
+                                  onPressed: widget.onCameraPressed,
+                                  icon: const Icon(
+                                    Icons.camera_alt_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            }),
+                      ],
                     ),
-                  ],
-                ),
-                hintText: 'Type a message!',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                  borderSide: const BorderSide(
-                    width: 0,
-                    style: BorderStyle.none,
+                    hintText: 'Type a message!',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                      borderSide: const BorderSide(
+                        width: 0,
+                        style: BorderStyle.none,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.all(10),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.white,
                   ),
                 ),
-                contentPadding: const EdgeInsets.all(10),
-              ),
-              style: const TextStyle(
-                color: Colors.white,
-              ),
+              ],
             ),
           ),
           ValueListenableBuilder(

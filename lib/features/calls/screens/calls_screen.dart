@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsapp_clone/common/widgets/whatsapp_app_bar.dart';
 import 'package:whatsapp_clone/styles/app_theme.dart';
 import 'package:whatsapp_clone/features/contacts/widgets/favorites_list.dart';
 import 'package:whatsapp_clone/features/calls/widgets/call_list.dart';
@@ -17,23 +18,13 @@ class CallsScreen extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      appBar: AppBar(
-        title: const Text('Llamadas'),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.camera_alt_outlined),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+      appBar: const WhatsappAppBar(
+        menuItems: [
+          PopupMenuItem(
+            child: Text('Borrar registro de llamadas'),
           ),
         ],
+        title: 'Llamadas',
       ),
       body: SingleChildScrollView(
         child: Column(

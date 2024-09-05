@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsapp_clone/common/widgets/whatsapp_app_bar.dart';
 import 'package:whatsapp_clone/features/news/widgets/status_list.dart';
 import 'package:whatsapp_clone/styles/app_theme.dart';
 
@@ -16,28 +17,38 @@ class NewsScreen extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      appBar: AppBar(
-        title: const Text('Novedades'),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.camera_alt_outlined),
+      appBar: WhatsappAppBar(
+        menuItems: const [
+          PopupMenuItem(
+            child: Text('Privacidad de estados'),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+          PopupMenuItem(
+            child: Text('Crear canal'),
           ),
         ],
+        title: 'Novedades',
+        onSearch: () {},
       ),
       body: const SingleChildScrollView(
         child: Column(
           children: [
             ListTile(title: Text('Estados')),
+            ListTile(
+              title: Text('Mi estado'),
+              subtitle: Text('Añade una actualización'),
+              leading: Badge(
+                alignment: Alignment.bottomRight,
+                backgroundColor: Colors.green,
+                label: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
+                child: CircleAvatar(
+                  //backgroundImage: NetworkImage('profilePic'),
+                  backgroundColor: Colors.grey,
+                ),
+              ),
+            ),
             StatusList(),
           ],
         ),

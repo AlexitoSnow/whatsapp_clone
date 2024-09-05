@@ -9,6 +9,7 @@ import 'package:country/country.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:whatsapp_clone/common/widgets/camera_screen.dart';
 import 'package:whatsapp_clone/features/screens.dart';
 import 'package:whatsapp_clone/features/chat/screens/chat_screen.dart';
 import 'package:whatsapp_clone/features/settings/screens/settings_screen.dart';
@@ -114,6 +115,10 @@ class AppRouter {
     GoRoute(
       path: AppRoutes.home,
       builder: (_, __) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.camera,
+      builder: (_, __) => const CameraScreen(),
     ),
     GoRoute(
       path: AppRoutes.chat,

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:status_view/status_view.dart';
 
@@ -17,36 +16,26 @@ class StatusList extends StatelessWidget {
       itemBuilder: (context, index) {
         return Row(
           children: [
-            Expanded(
-              child: ListTile(
-                onTap: () {},
-                title: const Text(
-                  'Person',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                subtitle: const Padding(
-                  padding: EdgeInsets.only(top: 6.0),
-                  child: Text(
-                    'info',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
-                leading: StatusView(
-                  centerImageUrl: 'profilePic',
-                  radius: 30,
-                  indexOfSeenStatus: 3,
-                  numberOfStatus: Random().nextInt(5) + 5,
-                  seenColor: Colors.green,
-                  unSeenColor: Colors.grey,
+            ListTile(
+              onTap: () {},
+              title: const Text(
+                'Person',
+                style: TextStyle(
+                  fontSize: 18,
                 ),
               ),
-            ),
-            CachedNetworkImage(
-              imageUrl: 'ProfilePic',
-              fit: BoxFit.fitWidth,
-              width: MediaQuery.sizeOf(context).width * 0.2,
+              subtitle: const Text(
+                'time ago',
+                style: TextStyle(fontSize: 15),
+              ),
+              leading: StatusView(
+                centerImageUrl: 'profilePic',
+                radius: 30,
+                indexOfSeenStatus: 3,
+                numberOfStatus: Random().nextInt(5) + 5,
+                seenColor: Colors.green,
+                unSeenColor: Colors.grey,
+              ),
             ),
           ],
         );

@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
-import 'package:whatsapp_clone/common/widgets/camera_screen.dart';
 import 'package:whatsapp_clone/common/enums/message_type.dart';
 import 'package:whatsapp_clone/common/utils/utils.dart';
 import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
+import 'package:whatsapp_clone/router/router.dart';
 import '../widgets/chat_background.dart';
 import '../widgets/contact_bar.dart';
 import 'chat_list.dart';
@@ -128,10 +128,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   final response = await Permission.camera.request();
                   if (response != PermissionStatus.denied) {
                     if (context.mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const CameraScreen()),
-                      );
+                      context.push(AppRoutes.camera);
                     }
                   }
                 },
